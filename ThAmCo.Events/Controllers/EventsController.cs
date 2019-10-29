@@ -78,14 +78,17 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
             return View(@event);
+            //return RedirectToAction(nameof(Index));
         }
+
+
 
         // POST: Events/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Date,Duration,TypeId")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Title,Duration,Typeid")] Event @event)
         {
             if (id != @event.Id)
             {
@@ -96,7 +99,10 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
-                    _context.Update(@event);
+                    Event e = new Event() { Id = @event.Id, Duration = @event.Duration, Title = @event.Title };
+                    _context.Events.Attach(e);
+                    _context.Entry(e).Property(x => x.Title).IsModified = true;
+                    _context.Entry(e).Property(x => x.Duration).IsModified = true;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
