@@ -35,6 +35,37 @@
             @Html.DisplayFor(model => model.TypeId)
         </dd>
     </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Bookings.FirstOrDefault().Customer.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Bookings.FirstOrDefault().Customer.Surname)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Bookings.FirstOrDefault().Customer.Email)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Bookings)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.Surname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.Email)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
