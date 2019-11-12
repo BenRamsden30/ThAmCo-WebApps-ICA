@@ -37,11 +37,16 @@
                 @Html.DisplayFor(modelItem => item.Attended)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit", new { customerid=item.CustomerId, eventid = item.EventId }) |
+                @Html.ActionLink("Details", "Details", new { customerid=item.CustomerId, eventid = item.EventId }) |
+                @Html.ActionLink("Delete", "Delete", new { customerid=item.CustomerId, eventid = item.EventId  }) 
             </td>
         </tr>
 }
     </tbody>
+    <p>
+        Customer Counter Total: @Model.ToList().Count()  <br>
+        Customer Counter Total: @Model.Where(m => m.Attended).ToList().Count()
+
+    </p>
 </table>
