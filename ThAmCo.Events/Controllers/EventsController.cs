@@ -181,18 +181,19 @@ namespace ThAmCo.Events.Controllers
             HttpClient client = new HttpClient();
             var Builder = new UriBuilder("http://localhost");
             Builder.Port = 23652;
+            Builder.Path = "api/Availability";
             var query = HttpUtility.ParseQueryString(Builder.Query);
             query["eventType"] = @event.TypeId;
             query["eventDate"] = @event.Date.ToString("yyyy/MM/dd HH:mm:ss");
             query["eventDate"] = @event.Date.Add(@event.Duration.Value).ToString();
 
             Builder.Query = query.ToString();
-            string url = Builder.ToString();
+            string url = Builder.ToString() + "api/reservations";
 
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage response = await client.GetAsync(url);
-
+            ViewBag.response = response;
             if (response.IsSuccessStatusCode)
             {
                 ViewData["Reservations"] = response;
