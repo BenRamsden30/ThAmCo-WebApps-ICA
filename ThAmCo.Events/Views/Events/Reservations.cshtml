@@ -1,38 +1,45 @@
 ﻿@model ThAmCo.Events.Data.Event
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Reservations";
 }
 
-<h2>Edit</h2>
+<h2>Reservations</h2>
 
 <h4>Event</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Reservations">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" class="form-control" disabled />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control"disabled />
+                <input asp-for="Date" class="form-control" disabled />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
+                <label asp-for="TypeId" class="control-label"></label>
+                <input asp-for="TypeId" class="form-control" disabled />
+                <span asp-validation-for="TypeId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-            <label asp-for="TypeId" class="control-label"></label>
-            <input asp-for="TypeId" class="form-control" />
-            <span asp-validation-for="TypeId" class="text-danger"></span>
-        </div>
+            @*<div class="form-group">
+            <label asp-for="Venues" class="control-label"></label>
+            <input asp-for="Venues" class="form-control" />
+            <span asp-validation-for="Venues" class="text-danger"></span>
+        </div>*@
+            <label>Select Venue</label>
+            <select id="myList">
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+                <option value="4">Four</option>
+            </select>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
