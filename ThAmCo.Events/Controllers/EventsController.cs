@@ -184,16 +184,16 @@ namespace ThAmCo.Events.Controllers
             Builder.Path = "api/Availability";
             var query = HttpUtility.ParseQueryString(Builder.Query);
             query["eventType"] = @event.TypeId;
-            query["eventDate"] = @event.Date.ToString("yyyy/MM/dd HH:mm:ss");
-            query["eventDate"] = @event.Date.Add(@event.Duration.Value).ToString();
+            query["beginDate"] = @event.Date.ToString("yyyy/MM/dd HH:mm:ss");
+            query["endDate"] = @event.Date.Add(@event.Duration.Value).ToString("yyyy/MM/dd HH:mm:ss");
 
             Builder.Query = query.ToString();
-            string url = Builder.ToString() + "api/reservations";
+            string url = Builder.ToString();
 
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage response = await client.GetAsync(url);
-            ViewBag.response = response;
+
             if (response.IsSuccessStatusCode)
             {
                 ViewData["Reservations"] = response;
@@ -212,14 +212,14 @@ namespace ThAmCo.Events.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reservations(int id, string Title, TimeSpan Duration, Event @event)
+        public async Task<IActionResult> Reservations(int id, string TypeId, TimeSpan Duration, Event @event, DateTime date)
         {
             if (id != @event.Id)
             {
                 return NotFound();
             }
 
-            if (string.IsNullOrEmpty(Title) || Duration == null)
+            if (string.IsNullOrEmpty(TypeId) || Duration == null)
             {
                 return NotFound();
             }
@@ -227,11 +227,27 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
-                    Event e = await _context.Events.FindAsync(id);
-                    e.Title = Title;
-                    e.Duration = Duration;
+                    var Builder = new UriBuilder("http://localhost");
+                    Builder.Port = 23652;
+                    Builder.Path = "api/Availability";
+
+                    var query = HttpUtility.ParseQueryString(Builder.Query);
+                    query["eventType"] = TypeId;
+                    query["beginDate"] = date.ToString("yyyy/MM/dd HH:mm:ss");
+                    query["endDate"] = date.Add(Duration).ToString("yyyy/MM/dd HH:mm:ss");
+
+                    Builder.Query = query.ToString();
+                    string url = Builder.ToString();
+
+                    // put the update in here
+
                     await _context.SaveChangesAsync();
-                    _context.Events.Update(e);
+
+                    HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+                    HttpMessageHandler response = await client.GetAsync(url);
+
+                    ViewBag.item = response;
                 }
                 catch (DbUpdateConcurrencyException)
                 {
