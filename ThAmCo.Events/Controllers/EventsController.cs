@@ -8,12 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ThAmCo.Events.Data;
+using ThAmCo.Venues.Data;
 
 namespace ThAmCo.Events.Controllers
 {
     public class EventsController : Controller
     {
         private readonly EventsDbContext _context;
+
+        public HttpResponseMessage HttpResponseMessage { get; private set; }
 
         public EventsController(EventsDbContext context)
         {
@@ -196,9 +199,27 @@ namespace ThAmCo.Events.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                var venue = await response.Content.ReadAsAsync<IEnumerable<Venue>>();
+                if(venue.Count() == 0)
+                {
+                    ModelState.AddModelError("", "No Suitable venues could be found.");
+                }
+
+                ViewData["venues"] = new SelectList(venue, "Code", "Name");
+                
+                
+                
+                
+
+                return View(@event);
+            }
+
+
+            if (response.IsSuccessStatusCode)
+            {
                 ViewData["Reservations"] = response;
 
-                return View();
+                return View(@event);
             }
 
             return View(@event);
@@ -245,9 +266,7 @@ namespace ThAmCo.Events.Controllers
 
                     HttpClient client = new HttpClient();
                     client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-                    HttpMessageHandler response = await client.GetAsync(url);
-
-                    ViewBag.item = response;
+                    HttpResponseMessage response = await client.GetAsync(url);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
