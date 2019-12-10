@@ -26,5 +26,11 @@ namespace ThAmCo.Events.Controllers
 
             return View(venue);
         }
+
+        // GET: Reviews/Details/5
+        public async Task<ActionResult> Details(int id)
+        {
+            return View();
+        }
     }
 }
