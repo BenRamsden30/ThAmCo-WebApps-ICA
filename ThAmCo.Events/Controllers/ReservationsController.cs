@@ -78,6 +78,29 @@ namespace ThAmCo.Events.Controllers
                 return BadRequest();
             }
 
+
+            if (@event.reservations != null)
+            {
+                HttpClient clientWhenDeletingFirst = new HttpClient();
+                var RequestBuilder = new UriBuilder("http://localhost");
+                RequestBuilder.Port = 23652;
+                RequestBuilder.Path = "api/Reservations" + @event.reservations;
+                String url = RequestBuilder.ToString();
+
+                clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+                HttpResponseMessage responseWhenDeleting = await clientWhenDeletingFirst.DeleteAsync(url);
+
+                if(!responseWhenDeleting.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError("", "Previous reservation could not be removed.");
+                    return RedirectToAction(nameof(Index), "Events");
+                }
+
+                @event.reservations = null;
+                _context.Update(@event);
+                await _context.SaveChangesAsync();
+            }
+
             var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:23652");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
