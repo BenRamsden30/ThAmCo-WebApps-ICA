@@ -67,7 +67,10 @@ namespace ThAmCo.Events.Controllers
             return View();
         }
 
-        public async Task<ActionResult> Reservations (int id, string venueRef)
+
+        //To actually reserve a venue with check for if a venue is already booked.
+        //Done this way as i have the best udnerstanding of this method and i feel it allows for easier checking when attempting to reserve the venue.
+        public async Task<ActionResult> Reservations(int id, string venueRef)
         {
             var @event = await _context.Events.FirstOrDefaultAsync(a => a.Id == id);
             if (@event == null)
@@ -96,7 +99,7 @@ namespace ThAmCo.Events.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return View();
+            return RedirectToAction(nameof(Index), "Events");
         }
 
 

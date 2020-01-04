@@ -13,6 +13,7 @@
     <div class="col-md-4">
         <form asp-action="Reservations">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="reservations" class="control-label">Venues</label>
                 <select asp-for="reservations" class="form-control" asp-items="@ViewBag.venueList"> </select>
