@@ -37,16 +37,6 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.Reservation.Select(r => r = new Reservation)
-                .Include(c => c.StaffId)
-                .Include(c => c.EventDate)
-                .Include(c => c.VenueCode);
-
-
-
-
-
-
             var @event = await _context.Events
                 .Include(c => c.Bookings)
                 .ThenInclude(c => c.Customer)
@@ -56,7 +46,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            return View(@event,);
+            return View(@event);
         }
 
         // GET: Events/Create
@@ -139,7 +129,7 @@ namespace ThAmCo.Events.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(@event);
+            //return View(@event);
         }
 
         // GET: Events/Delete/5

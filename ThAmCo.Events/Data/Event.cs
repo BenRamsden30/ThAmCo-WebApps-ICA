@@ -20,6 +20,6 @@ namespace ThAmCo.Events.Data
 
         public List<GuestBooking> Bookings { get; set; }
 
-        public IEnumerable<Reservation> reservations { get; set; }
+        public string reservations { get; set; }
     }
 }
