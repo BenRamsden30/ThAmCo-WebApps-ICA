@@ -71,5 +71,7 @@ namespace ThAmCo.Events.Data
         }
 
         public DbSet<ThAmCo.Events.Data.Reservation> Reservation { get; set; }
+
+        public DbSet<ThAmCo.Events.Data.Staff> Staff { get; set; }
     }
 }
