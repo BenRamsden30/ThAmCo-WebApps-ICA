@@ -38,6 +38,8 @@ namespace ThAmCo.Events.Controllers
             }
 
             var @event = await _context.Events
+                .Include(e => e.StaffBookings)
+                .ThenInclude(e => e.staff)
                 .Include(c => c.Bookings)
                 .ThenInclude(c => c.Customer)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -155,8 +157,36 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
             var @event = await _context.Events.FindAsync(id);
+
+
+            if (@event.reservations != null)
+            {
+                HttpClient clientWhenDeletingFirst = new HttpClient();
+                var RequestBuilder = new UriBuilder("http://localhost");
+                RequestBuilder.Port = 23652;
+                RequestBuilder.Path = "api/Reservations" + @event.reservations;
+                String url = RequestBuilder.ToString();
+
+                clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+                HttpResponseMessage responseWhenDeleting = await clientWhenDeletingFirst.DeleteAsync(url);
+
+                if (!responseWhenDeleting.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError("", "Previous reservation could not be removed.");
+                    return RedirectToAction(nameof(Index), "Events");
+                }
+
+                @event.reservations = null;
+                _context.Update(@event);
+                await _context.SaveChangesAsync();
+            }
+
             _context.Events.Remove(@event);
+            await _context.SaveChangesAsync();
+            var @event2 = await _context.StaffBookings.FindAsync(id);
+            _context.StaffBookings.Remove(@event2);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

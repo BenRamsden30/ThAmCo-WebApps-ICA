@@ -34,6 +34,12 @@
         <dd>
             @Html.DisplayFor(model => model.TypeId)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.reservations)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.reservations)
+        </dd>
     </dl>
     <table class="table">
         <thead>
@@ -50,6 +56,7 @@
             </tr>
         </thead>
         <tbody>
+            <h3> Customers Booked On Event</h3>
             @foreach (var item in Model.Bookings)
             {
                 <tr>
@@ -65,18 +72,83 @@
                 </tr>
             }
         </tbody>
-        <div>
-            <h4>Movies Directed</h4>
-            @if (Model.Bookings.Count()>0)
-            {
-                @*<partial name="Reservations" />*@
-            }
-            else
-            {
-                <p>Not directed any movies.</p>
-            }
-        </div>
     </table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.StaffBookings.FirstOrDefault().staff.Surname)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StaffBookings.FirstOrDefault().staff.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StaffBookings.FirstOrDefault().staff.FirstAid)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <h3>Staff Booked On Event</h3>
+            @foreach (var item in Model.StaffBookings)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.staff.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.staff.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.staff.FirstAid)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <h3>
+        Venue
+    </h3>
+    <p>
+        <dt>
+            @Html.DisplayNameFor(model => model.reservations)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.reservations)
+        </dd>
+    </p>
+    <br />
+
+
+
+    @if (Model.StaffBookings.Where(e => e.staff.FirstAid).Count() == 0)
+    {
+        <p>
+            Warning! No staff are first aid trained.
+        </p>
+    }
+    else
+    {
+        <p>
+            There is a first aider assigned to this event.
+        </p>
+    }
+    <br />
+
+
+
+    @if (Model.StaffBookings.Where(e => e.EventId == Model.Id).Count() < (Model.Bookings.Count() / 10))
+    {
+        <p>
+            Warning! There are more than 10 customers per member of staff.
+        </p>
+    }
+    else
+    {
+        <p>
+            There is a satisfactory number of staff working this event.
+        </p>
+    }
+    <br />
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |

@@ -9,23 +9,27 @@ using ThAmCo.Events.Data;
 
 namespace ThAmCo.Events.Controllers
 {
-    public class StaffsController : Controller
+    public class StaffBookingsController : Controller
     {
         private readonly EventsDbContext _context;
 
-        public StaffsController(EventsDbContext context)
+        public StaffBookingsController(EventsDbContext context)
         {
             _context = context;
         }
 
-        // GET: Staffs
-        public async Task<IActionResult> Index()
+        // GET: StaffBookings
+        public async Task<IActionResult> Index(int? id )
         {
-            
-            return View(await _context.Staff.ToListAsync());
+            var eventsDbContext = _context.StaffBookings.Include(s => s.Event).AsQueryable();
+            if(id.HasValue)
+            {
+                eventsDbContext = eventsDbContext.Where(s => s.StaffId == id);
+            }
+            return View(await eventsDbContext.ToListAsync());
         }
 
-        // GET: Staffs/Details/5
+        // GET: StaffBookings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,41 +37,43 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var staff = await _context.Staff
-                .Include(b => b.Bookings)
-                .ThenInclude(e => e.Event)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (staff == null)
+            var staffBookings = await _context.StaffBookings
+                .Include(s => s.Event)
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (staffBookings == null)
             {
                 return NotFound();
             }
 
-            return View(staff);
+            return View(staffBookings);
         }
 
-        // GET: Staffs/Create
+        // GET: StaffBookings/Create
         public IActionResult Create()
         {
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
+            ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Surname");
             return View();
         }
 
-        // POST: Staffs/Create
+        // POST: StaffBookings/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Surname,FirstName,Email,FirstAid")] Staff staff)
+        public async Task<IActionResult> Create([Bind("id,StaffId,EventId,Date")] StaffBookings staffBookings)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(staff);
+                _context.Add(staffBookings);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(staff);
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffBookings.EventId);
+            return View(staffBookings);
         }
 
-        // GET: Staffs/Edit/5
+        // GET: StaffBookings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +81,23 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var staff = await _context.Staff.FindAsync(id);
-            if (staff == null)
+            var staffBookings = await _context.StaffBookings.FindAsync(id);
+            if (staffBookings == null)
             {
                 return NotFound();
             }
-            return View(staff);
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffBookings.EventId);
+            return View(staffBookings);
         }
 
-        // POST: Staffs/Edit/5
+        // POST: StaffBookings/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Surname,FirstName,Email,FirstAid")] Staff staff)
+        public async Task<IActionResult> Edit(int id, [Bind("id,StaffId,EventId,Date")] StaffBookings staffBookings)
         {
-            if (id != staff.Id)
+            if (id != staffBookings.id)
             {
                 return NotFound();
             }
@@ -99,12 +106,12 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
-                    _context.Update(staff);
+                    StaffBookings s = await _context.StaffBookings.FindAsync(id);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StaffExists(staff.Id))
+                    if (!StaffBookingsExists(staffBookings.id))
                     {
                         return NotFound();
                     }
@@ -115,10 +122,11 @@ namespace ThAmCo.Events.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(staff);
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffBookings.EventId);
+            return View(staffBookings);
         }
 
-        // GET: Staffs/Delete/5
+        // GET: StaffBookings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,30 +134,31 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var staff = await _context.Staff
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (staff == null)
+            var staffBookings = await _context.StaffBookings
+                .Include(s => s.Event)
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (staffBookings == null)
             {
                 return NotFound();
             }
 
-            return View(staff);
+            return View(staffBookings);
         }
 
-        // POST: Staffs/Delete/5
+        // POST: StaffBookings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var staff = await _context.Staff.FindAsync(id);
-            _context.Staff.Remove(staff);
+            var staffBookings = await _context.StaffBookings.FindAsync(id);
+            _context.StaffBookings.Remove(staffBookings);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StaffExists(int id)
+        private bool StaffBookingsExists(int id)
         {
-            return _context.Staff.Any(e => e.Id == id);
+            return _context.StaffBookings.Any(e => e.id == id);
         }
     }
 }

@@ -23,5 +23,6 @@ namespace ThAmCo.Events.Data
         public string reservations { get; set; }
 
         public List<StaffBookings> StaffBookings { get; set; }
+
     }
 }

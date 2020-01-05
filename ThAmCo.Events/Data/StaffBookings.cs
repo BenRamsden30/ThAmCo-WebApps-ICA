@@ -16,5 +16,6 @@ namespace ThAmCo.Events.Data
 
         public DateTime Date { get; set; }
 
+        public Staff staff { get; set; }
     }
 }

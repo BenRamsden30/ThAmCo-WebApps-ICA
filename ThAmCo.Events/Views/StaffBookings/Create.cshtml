@@ -1,4 +1,4 @@
-﻿@model ThAmCo.Events.Data.GuestBooking
+﻿@model ThAmCo.Events.Data.StaffBookings
 
 @{
     ViewData["Title"] = "Create";
@@ -6,26 +6,19 @@
 
 <h2>Create</h2>
 
-<h4>GuestBooking</h4>
+<h4>StaffBookings</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CustomerId" class="control-label">Customer Email</label>
-                <select asp-for="CustomerId" class ="form-control" asp-items="ViewBag.CustomerId"></select>
+                <label asp-for="StaffId" class="control-label">Staff</label>
+                <select input asp-for="StaffId" class="form-control" asp-items="ViewBag.StaffId" ></select>
             </div>
             <div class="form-group">
-                <label asp-for="EventId" class="control-label"> Event</label>
+                <label asp-for="EventId" class="control-label">Events</label>
                 <select asp-for="EventId" class ="form-control" asp-items="ViewBag.EventId"></select>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Attended" /> @Html.DisplayNameFor(model => model.Attended)
-                    </label>
-                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
