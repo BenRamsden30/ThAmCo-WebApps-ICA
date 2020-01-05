@@ -19,7 +19,5 @@ namespace ThAmCo.Events.Data
         public string Email { get; set; }
 
         public bool FirstAid { get; set; }
-
-        public List<StaffBookings> Events { get; set; }
     }
 }

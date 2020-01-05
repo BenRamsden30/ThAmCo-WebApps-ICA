@@ -21,14 +21,8 @@ namespace ThAmCo.Events.Controllers
         // GET: Staffs
         public async Task<IActionResult> Index()
         {
-            if (_context.Staff != null)
-            {
-                return View();
-            }
-            else
-            {
-                return View(await _context.Staff.ToListAsync());
-            }
+            
+            return View(await _context.Staff.ToListAsync());
         }
 
         // GET: Staffs/Details/5
@@ -60,7 +54,7 @@ namespace ThAmCo.Events.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Surname,FirstName,Email,FirstAid,StaffBookings")] Staff staff)
+        public async Task<IActionResult> Create([Bind("Id,Surname,FirstName,Email,FirstAid")] Staff staff)
         {
             if (ModelState.IsValid)
             {
