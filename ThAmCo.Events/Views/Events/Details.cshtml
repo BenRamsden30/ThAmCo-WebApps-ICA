@@ -53,23 +53,29 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Bookings.FirstOrDefault().Customer.Email)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Bookings.FirstOrDefault().Attended)
+                </th>
             </tr>
         </thead>
         <tbody>
             <h3> Customers Booked On Event</h3>
             @foreach (var item in Model.Bookings)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Customer.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Customer.Surname)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Customer.Email)
-                    </td>
-                </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Attended)
+            </td>
+        </tr>
             }
         </tbody>
     </table>

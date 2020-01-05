@@ -150,5 +150,35 @@ namespace ThAmCo.Events.Controllers
         {
             return _context.Customers.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> Anonymize(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return View(customer);
+        }
+
+        [HttpPost, ActionName("Anonymize")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AnonymizeConfirmed(int id)
+        {
+            var Customer = await _context.Customers.FindAsync(id);
+            Customer.FirstName = "Redacted";
+            Customer.Surname = "Redacted";
+            Customer.Email = "Redacted@Redacted";
+            await _context.SaveChangesAsync();
+            _context.Update(Customer);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
