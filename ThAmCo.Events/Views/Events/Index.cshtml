@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.TypeId)
             </th>
+            <th>
+                Warnings
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -44,6 +47,35 @@
                     @Html.DisplayFor(modelItem => item.TypeId)
                 </td>
                 <td>
+                    @* Figuring is there is a first aider present for event *@
+                    @if (item.StaffBookings.Where(e => e.staff.FirstAid).Count() == 0)
+                    {
+                        <p>
+                            Warning! No staff are first aid trained.
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            There is a first aider assigned to this event.
+                        </p>
+                    }
+
+                    @* figuring to see if there are enough staff at the event *@
+                    @if (item.StaffBookings.Where(e => e.EventId == item.Id).Count() < (item.Bookings.Count() / 10))
+                    {
+                        <p>
+                            Warning! There are more than 10 customers per member of staff.
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            There is a satisfactory number of staff working this event.
+                        </p>
+                    }
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
@@ -55,6 +87,3 @@
         }
     </tbody>
 </table>
-
-
-@*// asp-action="Reservations" asp-route-Typeid="@item.TypeId" asp-route-Date="@item.Date"*@

@@ -21,7 +21,9 @@ namespace ThAmCo.Events.Controllers
         // GET: StaffBookings
         public async Task<IActionResult> Index(int? id )
         {
-            var eventsDbContext = _context.StaffBookings.Include(s => s.Event).AsQueryable();
+            var eventsDbContext = _context.StaffBookings
+                .Include(s => s.Event)
+                .AsQueryable();
             if(id.HasValue)
             {
                 eventsDbContext = eventsDbContext.Where(s => s.StaffId == id);
@@ -47,6 +49,9 @@ namespace ThAmCo.Events.Controllers
 
             return View(staffBookings);
         }
+
+
+
 
         // GET: StaffBookings/Create
         public IActionResult Create()

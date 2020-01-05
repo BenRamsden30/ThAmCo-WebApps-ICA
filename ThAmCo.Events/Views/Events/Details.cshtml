@@ -105,21 +105,9 @@
             }
         </tbody>
     </table>
-    <h3>
-        Venue
-    </h3>
-    <p>
-        <dt>
-            @Html.DisplayNameFor(model => model.reservations)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.reservations)
-        </dd>
-    </p>
-    <br />
 
 
-
+    @* Figuring is there is a first aider present for event *@
     @if (Model.StaffBookings.Where(e => e.staff.FirstAid).Count() == 0)
     {
         <p>
@@ -135,7 +123,7 @@
     <br />
 
 
-
+    @* figuring to see if there are enough staff at the event *@
     @if (Model.StaffBookings.Where(e => e.EventId == Model.Id).Count() < (Model.Bookings.Count() / 10))
     {
         <p>
