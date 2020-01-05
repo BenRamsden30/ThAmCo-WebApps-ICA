@@ -172,7 +172,7 @@ namespace ThAmCo.Events.Controllers
                 HttpClient clientWhenDeletingFirst = new HttpClient();
                 var RequestBuilder = new UriBuilder("http://localhost");
                 RequestBuilder.Port = 23652;
-                RequestBuilder.Path = "api/Reservations" + @event.reservations;
+                RequestBuilder.Path = "api/Reservations/" + @event.reservations;
                 String url = RequestBuilder.ToString();
 
                 clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
@@ -192,7 +192,7 @@ namespace ThAmCo.Events.Controllers
             _context.Events.Remove(@event);
             await _context.SaveChangesAsync();
             var @event2 = await _context.StaffBookings.FindAsync(id);
-            _context.StaffBookings.Remove(@event2);
+            _context.StaffBookings.RemoveRange(_context.StaffBookings.Where(s => s.EventId == id));
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -201,5 +201,63 @@ namespace ThAmCo.Events.Controllers
         {
             return _context.Events.Any(e => e.Id == id);
         }
+
+        // GET: Events/Delete/5
+        public async Task<IActionResult> Cancel(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var @event = await _context.Events
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            return View(@event);
+        }
+
+        // POST: Events/Delete/5
+        [HttpPost, ActionName("Cancel")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelConfirmed(int id)
+        {
+
+            var @event = await _context.Events.FindAsync(id);
+
+
+            if (@event.reservations != null)
+            {
+                HttpClient clientWhenDeletingFirst = new HttpClient();
+                var RequestBuilder = new UriBuilder("http://localhost");
+                RequestBuilder.Port = 23652;
+                RequestBuilder.Path = "api/Reservations/" + @event.reservations;
+                String url = RequestBuilder.ToString();
+
+                clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+                HttpResponseMessage responseWhenDeleting = await clientWhenDeletingFirst.DeleteAsync(url);
+
+                if (!responseWhenDeleting.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError("", "Previous reservation could not be removed.");
+                    return RedirectToAction(nameof(Index), "Events");
+                }
+
+                @event.reservations = null;
+                _context.Update(@event);
+                await _context.SaveChangesAsync();
+            }
+
+           
+            await _context.SaveChangesAsync();
+            var @event2 = await _context.StaffBookings.FindAsync(id);
+            _context.StaffBookings.RemoveRange(_context.StaffBookings.Where(s => s.EventId == id));
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

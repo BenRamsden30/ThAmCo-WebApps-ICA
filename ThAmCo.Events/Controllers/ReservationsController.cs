@@ -84,7 +84,7 @@ namespace ThAmCo.Events.Controllers
                 HttpClient clientWhenDeletingFirst = new HttpClient();
                 var RequestBuilder = new UriBuilder("http://localhost");
                 RequestBuilder.Port = 23652;
-                RequestBuilder.Path = "api/Reservations" + @event.reservations;
+                RequestBuilder.Path = "api/Reservations/" + @event.reservations;
                 String url = RequestBuilder.ToString();
 
                 clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
