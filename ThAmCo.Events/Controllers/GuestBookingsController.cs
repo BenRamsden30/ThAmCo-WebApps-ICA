@@ -21,6 +21,8 @@ namespace ThAmCo.Events.Controllers
         // GET: GuestBookings
         public async Task<IActionResult> Index(int? customerid, int? eventid)
         {
+            // Building a query to be used when loading the customers page when passed an ID
+
             var eventsDbContext = _context.Guests
                 .Include(g => g.Customer)
                 .Include(g => g.Event)
@@ -55,6 +57,7 @@ namespace ThAmCo.Events.Controllers
         // GET: GuestBookings/Create
         public IActionResult Create()
         {
+            //Loads the viewbag with data that is to be used in the view, i used this method so that different data could be displayed based on the database even if it changes.
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email");
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
             return View();
@@ -76,6 +79,7 @@ namespace ThAmCo.Events.Controllers
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
+                //Loads the viewbag with data that is to be used in the view, i used this method so that different data could be displayed based on the database even if it changes.
                 ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
                 ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
                 return View(guestBooking);
@@ -89,6 +93,7 @@ namespace ThAmCo.Events.Controllers
         // GET: GuestBookings/Edit/5
         public async Task<IActionResult> Edit(int? customerid, int? eventid)
         {
+            //Checks to see if the ID's are valid.
             if (customerid == null || eventid == null)
             {
                 return NotFound();
@@ -99,6 +104,7 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
+            //Loads the viewbag with data that is to be used in the view, i used this method so that different data could be displayed based on the database even if it changes.
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
             return View(guestBooking);
@@ -111,6 +117,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int customerid,int eventid, [Bind("CustomerId,EventId,Attended")] GuestBooking guestBooking)
         {
+            //Checks to see if the guest booking exists.
             if (customerid != guestBooking.CustomerId || eventid != guestBooking.EventId)
             {
                 return NotFound();
@@ -136,6 +143,7 @@ namespace ThAmCo.Events.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            //Loads the viewbag with data that is to be used in the view, i used this method so that different data could be displayed based on the database even if it changes.
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
             return View(guestBooking);
@@ -166,6 +174,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int customerid, int eventid)
         {
+            //Deletes the guest booking.
             var guestBooking = await _context.Guests.FindAsync(customerid,eventid);
             _context.Guests.Remove(guestBooking);
             await _context.SaveChangesAsync();
