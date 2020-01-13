@@ -21,6 +21,7 @@ namespace ThAmCo.Events.Controllers
         // GET: StaffBookings
         public async Task<IActionResult> Index(int? id )
         {
+            //Filters staff bookings if an id is passed.
             var eventsDbContext = _context.StaffBookings
                 .Include(s => s.Event)
                 .AsQueryable();
@@ -34,11 +35,12 @@ namespace ThAmCo.Events.Controllers
         // GET: StaffBookings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            //Checks if the booking exists.
             if (id == null)
             {
                 return NotFound();
             }
-
+            //Returns details of booking if it does exist.
             var staffBookings = await _context.StaffBookings
                 .Include(s => s.Event)
                 .FirstOrDefaultAsync(m => m.id == id);
@@ -56,6 +58,7 @@ namespace ThAmCo.Events.Controllers
         // GET: StaffBookings/Create
         public IActionResult Create()
         {
+            //Adds the eventID and event title to the view bag to be displayed in the view, I used viewbag as it is easier to populat e adrop down box using this method.
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
             ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Surname");
             return View();
@@ -68,12 +71,14 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,StaffId,EventId,Date")] StaffBookings staffBookings)
         {
+            //If the booking exists then it adds the booking that is created based off the data inputted in the view.
             if (ModelState.IsValid)
             {
                 _context.Add(staffBookings);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            //Adds the eventID and event title to the view bag to be displayed in the view, I used viewbag as it is easier to populat e adrop down box using this method.
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffBookings.EventId);
             return View(staffBookings);
         }
@@ -85,7 +90,7 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
-
+            //Finds the event and adds its data to a viewbag to be used on the view, this was done to allow the data to be more easily changed adn displayed on the view.
             var staffBookings = await _context.StaffBookings.FindAsync(id);
             if (staffBookings == null)
             {
@@ -102,6 +107,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,StaffId,EventId,Date")] StaffBookings staffBookings)
         {
+            //Checks if the booking exists.
             if (id != staffBookings.id)
             {
                 return NotFound();
@@ -111,6 +117,7 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
+                    //Finds the staff booking and updates it.
                     StaffBookings s = await _context.StaffBookings.FindAsync(id);
                     await _context.SaveChangesAsync();
                 }
@@ -127,6 +134,7 @@ namespace ThAmCo.Events.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            //Adds the event title to the view bag to be displayed in the view, I used viewbag as it is easier to populat e adrop down box using this method.
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffBookings.EventId);
             return View(staffBookings);
         }

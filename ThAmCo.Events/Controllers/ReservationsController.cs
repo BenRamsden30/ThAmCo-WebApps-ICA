@@ -51,7 +51,7 @@ namespace ThAmCo.Events.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                //IF a response is accepted then it adds the venues to the view bag t be displayed in the view, i used viewbag as it is easier to populat e adrop down box using this method.
+                //IF a response is accepted then it adds the venues to the view bag to be displayed in the view, i used viewbag as it is easier to populat e adrop down box using this method.
                 var avalibleVenues = await response.Content.ReadAsAsync<IEnumerable<Venue>>();
 
                 ViewData["venueList"] = new SelectList(avalibleVenues, "Code", "Name");

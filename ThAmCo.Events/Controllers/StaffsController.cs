@@ -32,7 +32,7 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
-
+            //Loads the details of a staff member based of their ID.
             var staff = await _context.Staff
                 .Include(b => b.Bookings)
                 .ThenInclude(e => e.Event)
@@ -58,6 +58,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Surname,FirstName,Email,FirstAid")] Staff staff)
         {
+            //If the member of staff does not already exist then creates it.
             if (ModelState.IsValid)
             {
                 _context.Add(staff);
@@ -70,11 +71,12 @@ namespace ThAmCo.Events.Controllers
         // GET: Staffs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            //Checks if the staff member exists.
             if (id == null)
             {
                 return NotFound();
             }
-
+            //If they do then displays the details to be edited.
             var staff = await _context.Staff.FindAsync(id);
             if (staff == null)
             {
@@ -90,6 +92,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Surname,FirstName,Email,FirstAid")] Staff staff)
         {
+            //Checks if the staff member exists.
             if (id != staff.Id)
             {
                 return NotFound();
@@ -99,6 +102,7 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
+                    //If they do then updates the record based off the data inputted in the view.
                     _context.Update(staff);
                     await _context.SaveChangesAsync();
                 }
@@ -126,6 +130,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
+            //Loads the details of the staff member.
             var staff = await _context.Staff
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staff == null)
@@ -141,6 +146,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            //Deletes the staff member record from the database.
             var staff = await _context.Staff.FindAsync(id);
             _context.Staff.Remove(staff);
             await _context.SaveChangesAsync();
