@@ -104,15 +104,10 @@ namespace ThAmCo.Events.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, string Title, TimeSpan Duration, Event @event)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int Id, string Title, TimeSpan Duration)
         {
-            //Checks to find if the event exists before editing it.
-            if (id != @event.Id)
-            {
-                return NotFound();
-            }
-
+            Event e = await _context.Events.FirstOrDefaultAsync(b => b.Id == Id);
             if (string.IsNullOrEmpty(Title) || Duration == null)
             {
                 return NotFound();
@@ -122,7 +117,7 @@ namespace ThAmCo.Events.Controllers
                 try
                 {
                     //Updates the event with the data passed and set on the view.
-                        Event e = await  _context.Events.FindAsync(id);
+                        
                         e.Title = Title;
                         e.Duration = Duration;
                         await _context.SaveChangesAsync();
@@ -130,7 +125,7 @@ namespace ThAmCo.Events.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EventExists(@event.Id))
+                    if (!EventExists(e.Id))
                     {
                         return NotFound();
                     }

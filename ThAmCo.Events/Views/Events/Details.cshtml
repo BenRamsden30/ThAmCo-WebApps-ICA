@@ -130,10 +130,10 @@
 
 
     @* figuring to see if there are enough staff at the event *@
-    @if (Model.StaffBookings.Where(e => e.EventId == Model.Id).Count() < (Model.Bookings.Count() / 10))
+    @if ((Model.StaffBookings.Where(e => e.EventId == Model.Id).Count() < (Model.Bookings.Count() / 10)) || (Model.StaffBookings.Where(e => e.EventId == Model.Id).Count() == 0))
     {
         <p>
-            Warning! There are more than 10 customers per member of staff.
+            Warning! There are more than 10 customers per member of staff or no members of staff assigned.
         </p>
     }
     else
