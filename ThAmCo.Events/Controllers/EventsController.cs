@@ -26,6 +26,7 @@ namespace ThAmCo.Events.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
+            //Building the query to refine the search when accessing an event through a different page, this limits the events that are displayed.
             var @event = await _context.Events
                 .Include(e => e.StaffBookings)
                 .ThenInclude(e => e.staff)
@@ -43,6 +44,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
+            //This finds the details for only the event clicked in order to be displayed afterwards.
             var @event = await _context.Events
                 .Include(e => e.StaffBookings)
                 .ThenInclude(e => e.staff)
@@ -87,13 +89,13 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
+            //Finds details of the evnt to be displayed.
             var @event = await _context.Events.FindAsync(id);
             if (@event == null)
             {
                 return NotFound();
             }
             return View(@event);
-            //return RedirectToAction(nameof(Index));
         }
 
 
@@ -105,6 +107,7 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, string Title, TimeSpan Duration, Event @event)
         {
+            //Checks to find if the event exists before editing it.
             if (id != @event.Id)
             {
                 return NotFound();
@@ -118,6 +121,7 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
+                    //Updates the event with the data passed and set on the view.
                         Event e = await  _context.Events.FindAsync(id);
                         e.Title = Title;
                         e.Duration = Duration;
@@ -135,6 +139,7 @@ namespace ThAmCo.Events.Controllers
                         throw;
                     }
                 }
+                //Returns to the events index.
                 return RedirectToAction(nameof(Index));
             }
             //return View(@event);
@@ -163,27 +168,31 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-
+            //finds event that is trying to be deleted.
             var @event = await _context.Events.FindAsync(id);
 
 
             if (@event.reservations != null)
             {
+                //Building query to message the venues database.
                 HttpClient clientWhenDeletingFirst = new HttpClient();
                 var RequestBuilder = new UriBuilder("http://localhost");
                 RequestBuilder.Port = 23652;
                 RequestBuilder.Path = "api/Reservations/" + @event.reservations;
                 String url = RequestBuilder.ToString();
 
+                //Checks if query was recieved.
                 clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
                 HttpResponseMessage responseWhenDeleting = await clientWhenDeletingFirst.DeleteAsync(url);
 
                 if (!responseWhenDeleting.IsSuccessStatusCode)
                 {
+                    //If unsuccessful it then it returns an error and returns to the events index.
                     ModelState.AddModelError("", "Previous reservation could not be removed.");
                     return RedirectToAction(nameof(Index), "Events");
                 }
 
+                //If successful it then deletes the booking 
                 @event.reservations = null;
                 _context.Update(@event);
                 await _context.SaveChangesAsync();
@@ -191,6 +200,7 @@ namespace ThAmCo.Events.Controllers
 
             _context.Events.Remove(@event);
             await _context.SaveChangesAsync();
+            //Removes any staff bookings that are related to the event freeing up staff.
             var @event2 = await _context.StaffBookings.FindAsync(id);
             _context.StaffBookings.RemoveRange(_context.StaffBookings.Where(s => s.EventId == id));
             await _context.SaveChangesAsync();
@@ -202,7 +212,7 @@ namespace ThAmCo.Events.Controllers
             return _context.Events.Any(e => e.Id == id);
         }
 
-        // GET: Events/Delete/5
+        // GET: Events/Cancel/5
         public async Task<IActionResult> Cancel(int? id)
         {
             if (id == null)
@@ -220,32 +230,36 @@ namespace ThAmCo.Events.Controllers
             return View(@event);
         }
 
-        // POST: Events/Delete/5
+        // POST: Events/Cancel/5
         [HttpPost, ActionName("Cancel")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelConfirmed(int id)
         {
-
+            //finds event that is trying to be deleted.
             var @event = await _context.Events.FindAsync(id);
 
 
             if (@event.reservations != null)
             {
+                //Building query to message the venues database.
                 HttpClient clientWhenDeletingFirst = new HttpClient();
                 var RequestBuilder = new UriBuilder("http://localhost");
                 RequestBuilder.Port = 23652;
                 RequestBuilder.Path = "api/Reservations/" + @event.reservations;
                 String url = RequestBuilder.ToString();
 
+                //Checks if query was recieved.
                 clientWhenDeletingFirst.DefaultRequestHeaders.Accept.ParseAdd("application/json");
                 HttpResponseMessage responseWhenDeleting = await clientWhenDeletingFirst.DeleteAsync(url);
 
                 if (!responseWhenDeleting.IsSuccessStatusCode)
                 {
+                    //If unsuccessful it then it returns an error and returns to the events index.
                     ModelState.AddModelError("", "Previous reservation could not be removed.");
                     return RedirectToAction(nameof(Index), "Events");
                 }
 
+                //If successful it then deletes the booking 
                 @event.reservations = null;
                 _context.Update(@event);
                 await _context.SaveChangesAsync();
@@ -253,6 +267,7 @@ namespace ThAmCo.Events.Controllers
 
            
             await _context.SaveChangesAsync();
+            //Removes any staff bookings that are related to the event freeing up staff.
             var @event2 = await _context.StaffBookings.FindAsync(id);
             _context.StaffBookings.RemoveRange(_context.StaffBookings.Where(s => s.EventId == id));
             await _context.SaveChangesAsync();

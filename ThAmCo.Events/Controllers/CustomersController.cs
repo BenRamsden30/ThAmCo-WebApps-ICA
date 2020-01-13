@@ -32,6 +32,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
+            // Building a query to be used when loading the customers page when passed an ID
             var customer = await _context.Customers
                 .Include(b => b.Bookings)
                 .ThenInclude(e => e.Event)
@@ -74,6 +75,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
+            //Loading edit page with customer details.
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
@@ -98,6 +100,7 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
+                    // Saves changes to the customer information to the database.
                     _context.Update(customer);
                     await _context.SaveChangesAsync();
                 }
@@ -112,6 +115,7 @@ namespace ThAmCo.Events.Controllers
                         throw;
                     }
                 }
+                //returns to the custome rlist.
                 return RedirectToAction(nameof(Index));
             }
             return View(customer);
@@ -151,8 +155,11 @@ namespace ThAmCo.Events.Controllers
             return _context.Customers.Any(e => e.Id == id);
         }
 
+        //I chose to createa new method for this rather than overriding the edit or delete option, this is due to it making it easier and more clear how things are done for another person,
+        //looking at my work, it also helps to split the code into seperate chuncks rather than having too much in either the delete or edit options.
         public async Task<IActionResult> Anonymize(int? id)
         {
+            //Load page and customer details based off of the edit customer methods.
             if (id == null)
             {
                 return NotFound();
@@ -168,10 +175,12 @@ namespace ThAmCo.Events.Controllers
             return View(customer);
         }
 
+        //New method created for sake of consistency with the rest of the program adn for previously mentioned benefits.
         [HttpPost, ActionName("Anonymize")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AnonymizeConfirmed(int id)
         {
+            //Similar to the edit save changes, this just sets all values to Redacted allowing the customer to be anonymized.
             var Customer = await _context.Customers.FindAsync(id);
             Customer.FirstName = "Redacted";
             Customer.Surname = "Redacted";
